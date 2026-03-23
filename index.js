@@ -155,4 +155,24 @@ app.get("/api/techs", (req, res) => {
   res.json(results.slice(0, 5));
 });
 
+app.get("/api/geocode", async (req, res) => {
+  const query = req.query.q;
+
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+      {
+        headers: {
+          "User-Agent": "rv-repair-app"
+        }
+      }
+    );
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Geocoding failed" });
+  }
+});
+
 app.listen(PORT, () => console.log("Server running on " + PORT));
