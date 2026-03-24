@@ -160,13 +160,20 @@ app.get("/api/geocode", async (req, res) => {
 
   try {
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=us`,
       {
         headers: {
           "User-Agent": "rv-repair-app"
         }
       }
     );
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Geocoding failed" });
+  }
+});
 
     const data = await response.json();
     res.json(data);
