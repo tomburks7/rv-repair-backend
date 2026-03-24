@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const fetch = require("node-fetch");
 
 const app = express();
 app.use(cors());
@@ -165,14 +164,14 @@ app.get("/api/geocode", async (req, res) => {
 }
 
   try {
-    const response = await fetch(
+    const response = await global.fetch(
       `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=us`,
       {
-        headers: {
-          "User-Agent": "rv-repair-app"
-        }
-      }
-    );
+    headers: {
+      "User-Agent": "rv-repair-app"
+    }
+  }
+);
 
     const data = await response.json();
     res.json(data);
