@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const fetch = global.fetch;
 
 const app = express();
 app.use(cors());
@@ -156,12 +157,37 @@ app.get("/api/techs", (req, res) => {
 });
 
 app.get("/api/geocode", async (req, res) => {
-  let query = req.query.q;
+  try {
+    let query = req.query.q;
 
-  // If it's a 5-digit ZIP → force US context
-  if (/^\d{5}$/.test(query)) {
-  query = `${query}, USA`;
-}
+    // Force US for ZIPs
+    if (/^\d{5}$/.test(query)) {
+      query = `${query}, USA`;
+    }
+
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=us`,
+      {
+        headers: {
+          "User-Agent": "rv-repair-app"
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    // ✅ CRITICAL: prevent crashes
+    if (!data || data.length === 0) {
+      return res.json([]);
+    }
+
+    res.json(data);
+
+  } catch (err) {
+    console.error("GEOCODE ERROR:", err);
+    res.json([]); // NEVER crash
+  }
+});
 
   try {
     const response = await global.fetch(
