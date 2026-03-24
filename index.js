@@ -156,7 +156,12 @@ app.get("/api/techs", (req, res) => {
 });
 
 app.get("/api/geocode", async (req, res) => {
-  const query = req.query.q;
+  let query = req.query.q;
+
+  // If it's a 5-digit ZIP → force US context
+  if (/^\d{5}$/.test(query)) {
+  query = `${query}, USA`;
+}
 
   try {
     const response = await fetch(
